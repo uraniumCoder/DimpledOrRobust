@@ -1,5 +1,5 @@
 import torch.nn as nn
-from torchsummary import summary
+from torchinfo import summary
 
 from config import device, imsize
 
