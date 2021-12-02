@@ -73,7 +73,7 @@ class segnetDown3(nn.Module):
 class segnetUp2(nn.Module):
     def __init__(self, in_size, out_size):
         super(segnetUp2, self).__init__()
-        self.unpool = nn.Upsample(scale=2)#nn.MaxUnpool2d(2, 2)
+        self.unpool = nn.Upsample(scale_factor=2)#nn.MaxUnpool2d(2, 2)
         self.conv1 = conv2DBatchNormRelu(in_size, in_size, 3, 1, 1)
         self.conv2 = conv2DBatchNormRelu(in_size, out_size, 3, 1, 1)
 
@@ -87,7 +87,7 @@ class segnetUp2(nn.Module):
 class segnetUp3(nn.Module):
     def __init__(self, in_size, out_size):
         super(segnetUp3, self).__init__()
-        self.unpool = nn.Upsample(scale=2)#nn.MaxUnpool2d(2, 2)
+        self.unpool = nn.Upsample(scale_factor=2)#nn.MaxUnpool2d(2, 2)
         self.conv1 = conv2DBatchNormRelu(in_size, in_size, 3, 1, 1)
         self.conv2 = conv2DBatchNormRelu(in_size, in_size, 3, 1, 1)
         self.conv3 = conv2DBatchNormRelu(in_size, out_size, 3, 1, 1)
