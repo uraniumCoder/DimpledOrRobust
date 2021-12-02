@@ -1,7 +1,7 @@
 import torch.nn as nn
 from torchinfo import summary
 
-from config import device, imsize
+from DimpledOrRobust.autoencoders.Autoencoder.config import device, imsize
 
 
 class conv2DBatchNormRelu(nn.Module):
@@ -48,9 +48,9 @@ class segnetDown2(nn.Module):
     def forward(self, inputs):
         outputs = self.conv1(inputs)
         outputs = self.conv2(outputs)
-        unpooled_shape = outputs.size()
+        #unpooled_shape = outputs.size()
         outputs, indices = self.maxpool_with_argmax(outputs)
-        return outputs, indices, unpooled_shape
+        return outputs#, indices, unpooled_shape
 
 
 class segnetDown3(nn.Module):
@@ -65,20 +65,20 @@ class segnetDown3(nn.Module):
         outputs = self.conv1(inputs)
         outputs = self.conv2(outputs)
         outputs = self.conv3(outputs)
-        unpooled_shape = outputs.size()
+        #unpooled_shape = outputs.size()
         outputs, indices = self.maxpool_with_argmax(outputs)
-        return outputs, indices, unpooled_shape
+        return outputs#, indices, unpooled_shape
 
 
 class segnetUp2(nn.Module):
     def __init__(self, in_size, out_size):
         super(segnetUp2, self).__init__()
-        self.unpool = nn.MaxUnpool2d(2, 2)
+        self.unpool = nn.Upsample(scale=2)#nn.MaxUnpool2d(2, 2)
         self.conv1 = conv2DBatchNormRelu(in_size, in_size, 3, 1, 1)
         self.conv2 = conv2DBatchNormRelu(in_size, out_size, 3, 1, 1)
 
-    def forward(self, inputs, indices, output_shape):
-        outputs = self.unpool(input=inputs, indices=indices, output_size=output_shape)
+    def forward(self, inputs):#, indices, output_shape):
+        outputs = self.unpool(inputs)#self.unpool(input=inputs, indices=indices, output_size=output_shape)
         outputs = self.conv1(outputs)
         outputs = self.conv2(outputs)
         return outputs
@@ -87,13 +87,13 @@ class segnetUp2(nn.Module):
 class segnetUp3(nn.Module):
     def __init__(self, in_size, out_size):
         super(segnetUp3, self).__init__()
-        self.unpool = nn.MaxUnpool2d(2, 2)
+        self.unpool = nn.Upsample(scale=2)#nn.MaxUnpool2d(2, 2)
         self.conv1 = conv2DBatchNormRelu(in_size, in_size, 3, 1, 1)
         self.conv2 = conv2DBatchNormRelu(in_size, in_size, 3, 1, 1)
         self.conv3 = conv2DBatchNormRelu(in_size, out_size, 3, 1, 1)
 
-    def forward(self, inputs, indices, output_shape):
-        outputs = self.unpool(input=inputs, indices=indices, output_size=output_shape)
+    def forward(self, inputs):#, indices, output_shape):
+        outputs = self.unpool(inputs)#self.unpool(input=inputs, indices=indices, output_size=output_shape)
         outputs = self.conv1(outputs)
         outputs = self.conv2(outputs)
         outputs = self.conv3(outputs)
@@ -119,21 +119,27 @@ class SegNet(nn.Module):
         self.up2 = segnetUp2(128, 64)
         self.up1 = segnetUp2(64, n_classes)
 
-    def forward(self, inputs):
+    def encoder(self, inputs):
+        down1 = self.down1(inputs)
+        down2 = self.down2(down1)
+        down3 = self.down3(down2)
+        down4 = self.down4(down3)
+        down5 = self.down5(down4)
+        return down5
 
-        down1, indices_1, unpool_shape1 = self.down1(inputs)
-        down2, indices_2, unpool_shape2 = self.down2(down1)
-        down3, indices_3, unpool_shape3 = self.down3(down2)
-        down4, indices_4, unpool_shape4 = self.down4(down3)
-        down5, indices_5, unpool_shape5 = self.down5(down4)
-
-        up5 = self.up5(down5, indices_5, unpool_shape5)
-        up4 = self.up4(up5, indices_4, unpool_shape4)
-        up3 = self.up3(up4, indices_3, unpool_shape3)
-        up2 = self.up2(up3, indices_2, unpool_shape2)
-        up1 = self.up1(up2, indices_1, unpool_shape1)
-
+    def decoder(self, latent):
+        up5 = self.up5(latent)#, indices_5, unpool_shape5)
+        up4 = self.up4(up5)#, indices_4, unpool_shape4)
+        up3 = self.up3(up4)#, indices_3, unpool_shape3)
+        up2 = self.up2(up3)#, indices_2, unpool_shape2)
+        up1 = self.up1(up2)#, indices_1, unpool_shape1)
         return up1
+
+    def forward(self, inputs):
+        
+        latent = self.encoder(inputs)
+
+        return self.decoder(latent)
 
     def init_vgg16_params(self, vgg16):
         blocks = [self.down1, self.down2, self.down3, self.down4, self.down5]
