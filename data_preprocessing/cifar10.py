@@ -18,7 +18,7 @@ class Cifar10DatasetFiltered(Dataset):
         super().__init__()
         selected_classes = self.DEFAULT_CLASSES
         if split == 'train':
-            data_transform = DatasetMaker.TRANSFORM_WITH_AUG
+            data_transform = DatasetMaker.TRANSFORM_NO_AUG
             raw_set = torchvision.datasets.CIFAR10(root=data_root, train=True, download=True)
         
         else:

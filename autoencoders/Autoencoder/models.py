@@ -109,13 +109,13 @@ class SegNet(nn.Module):
 
         self.down1 = segnetDown2(self.in_channels, 64)
         self.down2 = segnetDown2(64, 128)
-        self.down3 = segnetDown3(128, 256)
-        self.down4 = segnetDown3(256, 512)
-        self.down5 = segnetDown3(512, 512)
+        self.down3 = segnetDown3(128, 128)
+        self.down4 = segnetDown3(128, 128)
+        self.down5 = segnetDown3(128, 128)
 
-        self.up5 = segnetUp3(512, 512)
-        self.up4 = segnetUp3(512, 256)
-        self.up3 = segnetUp3(256, 128)
+        self.up5 = segnetUp3(128, 128)
+        self.up4 = segnetUp3(128, 128)
+        self.up3 = segnetUp3(128, 128)
         self.up2 = segnetUp2(128, 64)
         self.up1 = segnetUp2(64, n_classes)
 
