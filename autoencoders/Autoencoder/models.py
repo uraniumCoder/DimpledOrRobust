@@ -107,17 +107,17 @@ class SegNet(nn.Module):
         self.in_channels = in_channels
         self.is_unpooling = is_unpooling
 
-        self.down1 = segnetDown2(self.in_channels, 64)
-        self.down2 = segnetDown2(64, 256)
-        self.down3 = segnetDown3(256, 1024)
-        self.down4 = segnetDown3(1024, 4096)
-        self.down5 = segnetDown3(4096, 10000)
+        self.down1 = segnetDown2(self.in_channels, 12)
+        self.down2 = segnetDown2(12, 48)
+        self.down3 = segnetDown3(48, 200)
+        self.down4 = segnetDown3(200, 500)
+        self.down5 = segnetDown3(500, 1000)
 
-        self.up5 = segnetUp3(10000, 4096)
-        self.up4 = segnetUp3(4096, 1024)
-        self.up3 = segnetUp3(1024, 256)
-        self.up2 = segnetUp2(256, 64)
-        self.up1 = segnetUp2(64, n_classes)
+        self.up5 = segnetUp3(1000, 500)
+        self.up4 = segnetUp3(500, 200)
+        self.up3 = segnetUp3(200, 48)
+        self.up2 = segnetUp2(48, 12)
+        self.up1 = segnetUp2(12, n_classes)
 
     def encoder(self, inputs):
         down1 = self.down1(inputs)
