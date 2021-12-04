@@ -125,6 +125,7 @@ class SegNet(nn.Module):
         down3 = self.down3(down2)
         down4 = self.down4(down3)
         down5 = self.down5(down4)
+        print(down1.shape, down2.shape, down3.shape, down4.shape, down5.shape)
         return down5
 
     def decoder(self, latent):
@@ -133,6 +134,7 @@ class SegNet(nn.Module):
         up3 = self.up3(up4)#, indices_3, unpool_shape3)
         up2 = self.up2(up3)#, indices_2, unpool_shape2)
         up1 = self.up1(up2)#, indices_1, unpool_shape1)
+        print(up1.shape, up2.shape, up3.shape, up4.shape, up5.shape)
         return up1
 
     def forward(self, inputs):
