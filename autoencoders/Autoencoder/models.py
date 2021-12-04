@@ -108,15 +108,15 @@ class SegNet(nn.Module):
         self.is_unpooling = is_unpooling
 
         self.down1 = segnetDown2(self.in_channels, 64)
-        self.down2 = segnetDown2(64, 128)
-        self.down3 = segnetDown3(128, 128)
-        self.down4 = segnetDown3(128, 128)
-        self.down5 = segnetDown3(128, 128)
+        self.down2 = segnetDown2(64, 256)
+        self.down3 = segnetDown3(256, 1024)
+        self.down4 = segnetDown3(1024, 4096)
+        self.down5 = segnetDown3(4096, 10000)
 
-        self.up5 = segnetUp3(128, 128)
-        self.up4 = segnetUp3(128, 128)
-        self.up3 = segnetUp3(128, 128)
-        self.up2 = segnetUp2(128, 64)
+        self.up5 = segnetUp3(10000, 4096)
+        self.up4 = segnetUp3(4096, 1024)
+        self.up3 = segnetUp3(1024, 256)
+        self.up2 = segnetUp2(256, 64)
         self.up1 = segnetUp2(64, n_classes)
 
     def encoder(self, inputs):
@@ -125,7 +125,6 @@ class SegNet(nn.Module):
         down3 = self.down3(down2)
         down4 = self.down4(down3)
         down5 = self.down5(down4)
-        print(down1.shape, down2.shape, down3.shape, down4.shape, down5.shape)
         return down5
 
     def decoder(self, latent):
@@ -134,7 +133,6 @@ class SegNet(nn.Module):
         up3 = self.up3(up4)#, indices_3, unpool_shape3)
         up2 = self.up2(up3)#, indices_2, unpool_shape2)
         up1 = self.up1(up2)#, indices_1, unpool_shape1)
-        print(up1.shape, up2.shape, up3.shape, up4.shape, up5.shape)
         return up1
 
     def forward(self, inputs):
