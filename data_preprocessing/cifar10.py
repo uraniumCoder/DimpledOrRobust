@@ -18,17 +18,17 @@ class Cifar10DatasetFiltered(Dataset):
         super().__init__()
         selected_classes = self.DEFAULT_CLASSES
         if split == 'train':
-            data_transform = DatasetMaker.TRANSFORM_NO_AUG
+            self.data_transform = DatasetMaker.TRANSFORM_NO_AUG
             raw_set = torchvision.datasets.CIFAR10(root=data_root, train=True, download=True)
         
         else:
-            data_transform = DatasetMaker.TRANSFORM_NO_AUG
+            self.data_transform = DatasetMaker.TRANSFORM_NO_AUG
             raw_set = torchvision.datasets.CIFAR10(root=data_root, train=False, download=True)
 
         X, y = raw_set.data, raw_set.targets
         self.processed_set = DatasetMaker([
             self.get_class_i(X, y, self.CLASS_DICT[class_]) for class_ in selected_classes
-        ], data_transform)
+        ])#, data_transform)
 
     # Define a function to separate CIFAR classes by class index
     @staticmethod
@@ -71,18 +71,18 @@ class DatasetMaker(Dataset):
     # Transforms object for testset with NO augmentation
     TRANSFORM_NO_AUG = transforms.Compose([TT, NRM])
 
-    def __init__(self, datasets, transformFunc=TRANSFORM_NO_AUG):
+    def __init__(self, datasets):#, transformFunc=TRANSFORM_NO_AUG):
         """
         datasets: a list of get_class_i outputs, i.e. a list of list of images for selected classes
         """
         self.datasets = datasets
         self.lengths = [len(d) for d in self.datasets]
-        self.transformFunc = transformFunc
+        #self.transformFunc = transformFunc
 
     def __getitem__(self, i):
         class_label, index_wrt_class = self.index_of_which_bin(self.lengths, i)
         img = self.datasets[class_label][index_wrt_class]
-        img = self.transformFunc(img)
+        #img = self.transformFunc(img)
         return img, class_label
 
     def __len__(self):
