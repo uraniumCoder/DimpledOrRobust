@@ -20,8 +20,8 @@ class CIFAR(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(n_channel, num_classes)
         )
-        print(self.features)
-        print(self.classifier)
+        #print(self.features)
+        #print(self.classifier)
 
     def forward(self, x):
         x = self.features(x)

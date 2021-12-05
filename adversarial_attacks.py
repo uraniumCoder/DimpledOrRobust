@@ -43,7 +43,6 @@ def patch_perturb(project_onto_k=False, project_onto_not_k=False, get_local_mani
         delta.requires_grad_()
         for ii in range(nb_iter):
             outputs = predict(xvar + delta)
-            print(ii, yvar, outputs.argmax(-1))
             if outputs.argmax(-1).item() != yvar.item():
                 break
             loss = loss_fn(outputs, yvar)
@@ -59,8 +58,6 @@ def patch_perturb(project_onto_k=False, project_onto_not_k=False, get_local_mani
                                                     ) - xvar.data
 
             elif ord == 2:
-                print(ord)
-                print(delta.shape)
                 grad = delta.grad.data
 
                 # projection onto image manifold
