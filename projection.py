@@ -6,7 +6,7 @@ def projection(b, spanning_vector_matrix):
     b = b.type(torch.FloatTensor)
     n = b.shape[0]
     (p,m)= spanning_vector_matrix.shape
-    zero_matrix = torch.zeros(n-p,m)
+    zero_matrix = torch.zeros(n-p,m, device=b.device)
     A = torch.cat((spanning_vector_matrix,zero_matrix),dim=0)
     A_T = torch.transpose(A,0,1)
     inv = torch.linalg.inv(torch.matmul(A_T,A))
