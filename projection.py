@@ -3,7 +3,7 @@ import torch
 def projection(b, spanning_vector_matrix):
     #spanning vector matrix is of shape p,m
     #b is of shape n,1. Here p<n We stack zeros under A so that it becomes a matrix of shape n,m.
-    b = b.type(torch.FloatTensor)
+    b = b.type(torch.cuda.FloatTensor)
     n = b.shape[0]
     (p,m)= spanning_vector_matrix.shape
     zero_matrix = torch.zeros(n-p,m, device=b.device)
