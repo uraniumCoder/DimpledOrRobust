@@ -111,3 +111,4 @@ def patch_perturb(project_onto_k=False, project_onto_not_k=False, get_local_mani
         return x_adv
 
     advertorch.attacks.iterative_projected_gradient.perturb_iterative = greedy_perturb_iterative
+    return greedy_perturb_iterative
