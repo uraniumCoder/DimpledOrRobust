@@ -28,7 +28,7 @@ class Cifar10DatasetFiltered(Dataset):
         X, y = raw_set.data, raw_set.targets
         self.processed_set = DatasetMaker([
             self.get_class_i(X, y, self.CLASS_DICT[class_]) for class_ in selected_classes
-        ])#, data_transform)
+        ], self.data_transform)
 
     # Define a function to separate CIFAR classes by class index
     @staticmethod
@@ -60,29 +60,29 @@ class DatasetMaker(Dataset):
 
     # Transformations
     RHF = transforms.RandomHorizontalFlip()
-    NRM = transforms.Normalize((0, 0, 0), (0.5, 0.5, 0.5))
+    NRM = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
     TT = transforms.ToTensor()
     RC = transforms.RandomCrop(32)
     P = transforms.Pad(4)
     TPIL = transforms.ToPILImage()
 
-    # Transforms object for trainset with augmentation
+    # Transforms object for trainset with augmentations
     TRANSFORM_WITH_AUG = transforms.Compose([TPIL, P, RC, RHF, TT, NRM])
     # Transforms object for testset with NO augmentation
     TRANSFORM_NO_AUG = transforms.Compose([TT, NRM])
 
-    def __init__(self, datasets):#, transformFunc=TRANSFORM_NO_AUG):
+    def __init__(self, datasets, transformFunc=TRANSFORM_NO_AUG):
         """
         datasets: a list of get_class_i outputs, i.e. a list of list of images for selected classes
         """
         self.datasets = datasets
         self.lengths = [len(d) for d in self.datasets]
-        #self.transformFunc = transformFunc
+        self.transformFunc = transformFunc
 
     def __getitem__(self, i):
         class_label, index_wrt_class = self.index_of_which_bin(self.lengths, i)
         img = self.datasets[class_label][index_wrt_class]
-        #img = self.transformFunc(img)
+        img = self.transformFunc(img)
         return img, class_label
 
     def __len__(self):
