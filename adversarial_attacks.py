@@ -62,9 +62,11 @@ def patch_perturb(project_onto_k=False, project_onto_not_k=False, get_local_mani
 
                 # projection onto image manifold
                 if project_onto_k:
+                    raise Exception
                     k_dim_manifold = get_local_manifold_approx(xvar)
                     grad = projection(grad,k_dim_manifold)
                 if project_onto_not_k:
+                    raise Exception
                     k_dim_manifold = get_local_manifold_approx(xvar)
                     grad = grad - projection(grad,k_dim_manifold)
 
