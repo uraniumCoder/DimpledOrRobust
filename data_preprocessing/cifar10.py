@@ -60,7 +60,7 @@ class DatasetMaker(Dataset):
 
     # Transformations
     RHF = transforms.RandomHorizontalFlip()
-    NRM = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    NRM = transforms.Normalize((0, 0, 0), (0.5, 0.5, 0.5))
     TT = transforms.ToTensor()
     RC = transforms.RandomCrop(32)
     P = transforms.Pad(4)

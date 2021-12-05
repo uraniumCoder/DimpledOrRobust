@@ -1,8 +1,17 @@
 import torch.nn as nn
+import torch
 from torchinfo import summary
 
 from DimpledOrRobust.autoencoders.Autoencoder.config import device, imsize
 
+class sharpUnsample(nn.Module):
+    def __init__(self):
+      super().__init__()
+    def forward(self, input):
+      b, c, h, w = input.shape
+      output = torch.zeros((b, c, 2*h, 2*w), device=input.device)
+      output[:, :, ::2, ::2] = input
+      return output
 
 class conv2DBatchNormRelu(nn.Module):
     def __init__(
@@ -73,6 +82,7 @@ class segnetDown3(nn.Module):
 class segnetUp2(nn.Module):
     def __init__(self, in_size, out_size):
         super(segnetUp2, self).__init__()
+        #self.unpool = sharpUnsample()
         self.unpool = nn.Upsample(scale_factor=2)#nn.MaxUnpool2d(2, 2)
         self.conv1 = conv2DBatchNormRelu(in_size, in_size, 3, 1, 1)
         self.conv2 = conv2DBatchNormRelu(in_size, out_size, 3, 1, 1)
@@ -87,6 +97,7 @@ class segnetUp2(nn.Module):
 class segnetUp3(nn.Module):
     def __init__(self, in_size, out_size):
         super(segnetUp3, self).__init__()
+        #self.unpool = sharpUnsample()
         self.unpool = nn.Upsample(scale_factor=2)#nn.MaxUnpool2d(2, 2)
         self.conv1 = conv2DBatchNormRelu(in_size, in_size, 3, 1, 1)
         self.conv2 = conv2DBatchNormRelu(in_size, in_size, 3, 1, 1)
@@ -107,33 +118,37 @@ class SegNet(nn.Module):
         self.in_channels = in_channels
         self.is_unpooling = is_unpooling
 
-        self.down1 = segnetDown2(self.in_channels, 12)
-        self.down2 = segnetDown2(12, 48)
-        self.down3 = segnetDown3(48, 200)
-        self.down4 = segnetDown3(200, 500)
-        self.down5 = segnetDown3(500, 1000)
+        self.down1 = segnetDown2(self.in_channels, 20)
+        self.down2 = segnetDown2(20, 32)
+        self.down3 = segnetDown3(32, 32)
+        self.down4 = segnetDown3(32, 32)
+        #self.down5 = segnetDown3(500, 1000)
 
-        self.up5 = segnetUp3(1000, 500)
-        self.up4 = segnetUp3(500, 200)
-        self.up3 = segnetUp3(200, 48)
-        self.up2 = segnetUp2(48, 12)
-        self.up1 = segnetUp2(12, n_classes)
+        #self.up5 = segnetUp3(1000, 500)
+        self.up4 = segnetUp3(32, 32)
+        self.up3 = segnetUp3(32, 32)
+        self.up2 = segnetUp2(32, 20)
+        self.up1 = segnetUp2(20, n_classes)
+
+        self.conv_final = nn.Conv2d(n_classes, n_classes, 1)
 
     def encoder(self, inputs):
         down1 = self.down1(inputs)
         down2 = self.down2(down1)
         down3 = self.down3(down2)
         down4 = self.down4(down3)
-        down5 = self.down5(down4)
-        return down5
+        #down5 = self.down5(down4)
+        return down4
 
     def decoder(self, latent):
-        up5 = self.up5(latent)#, indices_5, unpool_shape5)
+        up5 = latent
+        #up5 = self.up5(up6)#, indices_5, unpool_shape5)
         up4 = self.up4(up5)#, indices_4, unpool_shape4)
         up3 = self.up3(up4)#, indices_3, unpool_shape3)
         up2 = self.up2(up3)#, indices_2, unpool_shape2)
         up1 = self.up1(up2)#, indices_1, unpool_shape1)
-        return up1
+        x = self.conv_final(up1)
+        return x
 
     def forward(self, inputs):
         
