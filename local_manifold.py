@@ -11,4 +11,4 @@ def get_local_approximation(encoder, decoder, image):
   z_perturbed_flat = torch.eye(z_flat.shape[1], device='cuda')*eps + z_flat
   z_perturbed = z_perturbed_flat.reshape((-1, *z.shape[1:]))
   image_perturbed = decoder(z_perturbed)
-  return image_perturbed - image_on_manifold
+  return (image_perturbed - image_on_manifold).detach()
