@@ -1,3 +1,4 @@
+import torch 
 """Code to do projection of vector onto a linear subspace"""
 def projection(b, spanning_vector_matrix):
     #spanning vector matrix is of shape p,m

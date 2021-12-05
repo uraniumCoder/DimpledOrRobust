@@ -3,6 +3,7 @@ import torch
 def get_local_approximation(encoder, decoder, image):
   """
   Gets set of vectors spanning the tangent space at image of the image manifold
+  image is a tensor of shape (3, H, W)
   """
   z = encoder(image[None, :, :, :])
   z_flat = z.reshape((1, -1))
