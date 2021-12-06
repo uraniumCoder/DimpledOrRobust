@@ -9,7 +9,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from projection  import projection
 
-def patch_perturb(project_onto_k=False, project_onto_not_k=False, get_local_manifold_approx=None):
+def patch_perturb(project_onto_k=False, project_onto_not_k=False, get_local_manifold_approx=None, LATENT_DIM=None, IMAGESPACE_DIM=None,):
     def greedy_perturb_iterative(xvar, yvar, predict, nb_iter, eps, eps_iter, loss_fn,
                                                 delta_init=None, minimize=False, ord=np.inf,
                                                 clip_min=0.0, clip_max=1.0,
@@ -60,15 +60,22 @@ def patch_perturb(project_onto_k=False, project_onto_not_k=False, get_local_mani
             elif ord == 2:
                 grad = delta.grad.data
 
+                grad_shape = grad.shape()
+
                 # projection onto image manifold
-                if project_onto_k:
-                    raise Exception
-                    k_dim_manifold = get_local_manifold_approx(xvar)
-                    grad = projection(grad,k_dim_manifold)
-                if project_onto_not_k:
-                    raise Exception
-                    k_dim_manifold = get_local_manifold_approx(xvar)
-                    grad = grad - projection(grad,k_dim_manifold)
+                if project_onto_k or project_onto_not_k:
+                    local_manifold = get_local_manifold_approx(xvar)
+                    local_manifold_flat = local_manifold.reshape((LATENT_DIM, IMAGESPACE_DIM)).transpose(0, 1).cuda()
+                    grad_flat = grad.reshape((IMAGESPACE_DIM, 1)).cuda
+
+                    on_manifold = projection(grad_flat,local_manifold_flat)
+
+                    if project_onto_k:
+                        grad = on_manifold.reshape(grad_shape)
+
+                    if project_onto_not_k:
+                        off_manifold = grad_flat - on_manifold
+                        grad = off_manifold.reshape(grad_shape)
 
                 grad = normalize_by_pnorm(grad)
                 delta.data = delta.data + batch_multiply(eps_iter, grad)
