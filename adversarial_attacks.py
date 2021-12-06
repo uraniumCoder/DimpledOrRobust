@@ -66,7 +66,7 @@ def patch_perturb(project_onto_k=False, project_onto_not_k=False, get_local_mani
                 if project_onto_k or project_onto_not_k:
                     local_manifold = get_local_manifold_approx(xvar)
                     local_manifold_flat = local_manifold.reshape((LATENT_DIM, IMAGESPACE_DIM)).transpose(0, 1).cuda()
-                    grad_flat = grad.reshape((IMAGESPACE_DIM, 1)).cuda
+                    grad_flat = grad.reshape((IMAGESPACE_DIM, 1)).cuda()
 
                     on_manifold = projection(grad_flat,local_manifold_flat)
 
