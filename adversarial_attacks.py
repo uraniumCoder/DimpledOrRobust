@@ -60,7 +60,7 @@ def patch_perturb(project_onto_k=False, project_onto_not_k=False, get_local_mani
             elif ord == 2:
                 grad = delta.grad.data
 
-                grad_shape = grad.shape()
+                grad_shape = grad.shape
 
                 # projection onto image manifold
                 if project_onto_k or project_onto_not_k:
