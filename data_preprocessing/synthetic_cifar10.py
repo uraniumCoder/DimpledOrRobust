@@ -31,7 +31,7 @@ class SyntheticCifar10Dataset(Dataset):
 
     def __getitem__(self, idx):
         image = np.load(self.root_pth / self.image_pths[idx])
-        mage = torch.from_numpy(image).float()
+        image = torch.from_numpy(image).float()
         image = self.TRANSFORM_NO_AUG(image)
 
         with open(self.root_pth / 'label_{}.txt'.format(self.image_idxs[idx]), 'r') as f:
