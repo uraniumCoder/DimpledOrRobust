@@ -14,11 +14,10 @@ class SyntheticCifar10Dataset(Dataset):
     STD = torch.tensor((0.2336, 0.2314, 0.2573))
 
     NRM = transforms.Normalize(MEAN, STD)
-    TT = transforms.ToTensor()
     INV_NORM = transforms.Normalize(-MEAN/STD, 1/STD)
 
     # Transforms object for testset with NO augmentation
-    TRANSFORM_NO_AUG = transforms.Compose([TT, NRM])
+    TRANSFORM_NO_AUG = transforms.Compose([NRM])
 
 
     def __init__(self, root):
@@ -32,6 +31,7 @@ class SyntheticCifar10Dataset(Dataset):
 
     def __getitem__(self, idx):
         image = np.load(self.root_pth / self.image_pths[idx])
+        mage = torch.from_numpy(image).float()
         image = self.TRANSFORM_NO_AUG(image)
 
         with open(self.root_pth / 'label_{}.txt'.format(self.image_idxs[idx]), 'r') as f:
