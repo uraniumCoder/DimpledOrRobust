@@ -26,7 +26,6 @@ class SyntheticCifar10Dataset(Dataset):
         self.root_pth = Path(root)
         self.image_pths = list(self.root_pth.glob('image_*.npy'))
         self.image_idxs = [int(pth.stem.split('_')[1]) for pth in self.image_pths]
-        self.train = train
         
     def __len__(self):
         return len(self.image_idxs)
