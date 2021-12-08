@@ -32,7 +32,7 @@ class Cifar10DatasetFiltered(Dataset):
             self.get_class_i(X, y, self.CLASS_DICT[class_]) for class_ in selected_classes
         ], self.data_transform)
 
-    @classmethod
+    @staticmethod
     def denormalize(img):
         """
         Denormalizes a tensor image
