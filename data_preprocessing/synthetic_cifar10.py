@@ -32,7 +32,8 @@ class SyntheticCifar10Dataset(Dataset):
 
     def __getitem__(self, idx):
         image = np.load(self.root_pth / self.image_pths[idx])
-        image = np.transpose(image, (2, 0, 1))
+        print(image.shape)
+        image = np.transpose(image, (1, 2, 0))
         image = self.TRANSFORM_NO_AUG(image)
 
         with open(self.root_pth / 'label_{}.txt'.format(self.image_idxs[idx]), 'r') as f:
