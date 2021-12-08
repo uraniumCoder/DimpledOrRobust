@@ -3,6 +3,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 import numpy as np
+import torch
 
 class Cifar10DatasetFiltered(Dataset):
     """
@@ -29,6 +30,13 @@ class Cifar10DatasetFiltered(Dataset):
         self.processed_set = DatasetMaker([
             self.get_class_i(X, y, self.CLASS_DICT[class_]) for class_ in selected_classes
         ], self.data_transform)
+
+    @staticmethod
+    def denormalize(img):
+        """
+        Denormalizes a tensor image
+        """
+        return DatasetMaker.INV_NRM(img)
 
     # Define a function to separate CIFAR classes by class index
     @staticmethod
@@ -60,7 +68,10 @@ class DatasetMaker(Dataset):
 
     # Transformations
     RHF = transforms.RandomHorizontalFlip()
-    NRM = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2470, 0.2435, 0.2616))
+    IMG_MEANS = torch.tensor((0.4914, 0.4822, 0.4465))
+    IMG_STDS = torch.tensor((0.2470, 0.2435, 0.2616))
+    NRM = transforms.Normalize(IMG_MEANS, IMG_STDS)
+    INV_NRM = transforms.Normalize(-IMG_MEANS/IMG_STDS, 1/IMG_STDS)
     TT = transforms.ToTensor()
     RC = transforms.RandomCrop(32)
     P = transforms.Pad(4)
