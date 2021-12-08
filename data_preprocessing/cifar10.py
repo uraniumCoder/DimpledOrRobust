@@ -14,12 +14,14 @@ class Cifar10DatasetFiltered(Dataset):
     CLASS_DICT = {'plane': 0, 'car': 1, 'bird': 2, 'cat': 3, 'deer': 4,
                     'dog': 5, 'frog': 6, 'horse': 7, 'ship': 8, 'truck': 9}
 
-    def __init__(self, data_root, split, kwargs = {}):
+    def __init__(self, data_root, split, transform=True, kwargs = {}):
         # Downloading/Louding CIFAR10 data
         super().__init__()
         selected_classes = self.DEFAULT_CLASSES
         if split == 'train':
             self.data_transform = DatasetMaker.TRANSFORM_NO_AUG
+            if transform:
+                self.data_transform = DatasetMaker.TRANSFORM_WITH_AUG
             raw_set = torchvision.datasets.CIFAR10(root=data_root, train=True, download=True)
         
         else:
