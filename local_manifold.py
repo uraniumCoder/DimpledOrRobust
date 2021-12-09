@@ -17,8 +17,15 @@ def get_local_approximation(encoder, decoder, image):
 def get_orthonormal_basis(tangent_vectors):
     """
     Gets orthonormal basis of tangent space of image manifold
-    tangent_vectors is a tensor of shape (3, H, W)
+    tangent_vectors is a tensor of shape (imagespace_dim, latent_dim)
     """
-    tangent_vectors = tangent_vectors.reshape((*tangent_vectors.shape[:-3], -1))
     u, s, v = torch.linalg.svd(tangent_vectors, full_matrices=False)
-    return v
+    return u
+
+def sample_from_orthonormal_basis(orthonormal_basis, num_samples):
+    """
+    Samples num_samples from orthonormal basis
+    orthonormal_basis is a tensor of shape (imagespace_dim, latent_dim)
+    returns a tensor of shape (num_samples, imagespace_dim)
+    """
+    return orthonormal_basis @ torch.randn(*orthonormal_basis.shape[1:], num_samples, device='cuda')
