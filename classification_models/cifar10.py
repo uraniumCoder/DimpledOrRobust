@@ -44,7 +44,7 @@ def make_layers(cfg, batch_norm=False, dropout=0.0):
                 if i == len(cfg)-1:
                     layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU()]
                 else:
-                    layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU(), nn.Dropout(dropout)]
+                    layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU()]#, nn.Dropout(dropout)]
             else:
                 layers += [conv2d, nn.ReLU(), nn.Dropout(dropout)]
             in_channels = out_channels
