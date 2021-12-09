@@ -40,7 +40,10 @@ def make_layers(cfg, batch_norm=False, dropout=0.0):
             out_channels = v[0] if isinstance(v, tuple) else v
             conv2d = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=padding)
             if batch_norm:
-                layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU(), nn.Dropout(dropout)]
+                if i == len(cfg)-1:
+                    layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU()]
+                else:
+                    layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU(), nn.Dropout(dropout)]
             else:
                 layers += [conv2d, nn.ReLU(), nn.Dropout(dropout)]
             in_channels = out_channels
