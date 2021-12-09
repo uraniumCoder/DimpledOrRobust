@@ -14,3 +14,4 @@ def projection(b, spanning_vector_matrix):
     mat2 = torch.matmul(mat1,A_T)
 
     return torch.matmul(mat2,b)
+

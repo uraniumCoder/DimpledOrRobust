@@ -14,7 +14,7 @@ def patch_perturb(project_onto_k=False, project_onto_not_k=False,
                     LATENT_DIM=None, IMAGESPACE_DIM=None):
     def greedy_perturb_iterative(xvar, yvar, predict, nb_iter, eps, eps_iter, loss_fn,
                                                 delta_init=None, minimize=False, ord=np.inf,
-                                                clip_min=0.0, clip_max=1.0,
+                                                clip_min=-10.0, clip_max=10.0,
                                                 l1_sparsity=None):
         """
         Iteratively maximize the loss over the input. It is a shared method for
@@ -118,6 +118,7 @@ def patch_perturb(project_onto_k=False, project_onto_not_k=False,
             delta.grad.data.zero_()
 
         x_adv = clamp(xvar + delta, clip_min, clip_max)
+        assert (x_adv - xvar - delta < 0.01).all(), "adversarial outputs were clipped"
         return x_adv
 
     advertorch.attacks.iterative_projected_gradient.perturb_iterative = greedy_perturb_iterative
