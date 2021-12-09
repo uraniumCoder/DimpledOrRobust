@@ -43,6 +43,5 @@ def tsne_plots_model(vae_model, dataloader, save_path, perplexities=PERPLEXITIES
 
         draw_digits_latent_space(z_tsne, labels_stack[:], axs[i])
         axs[i].set_title(f'T-SNE Perplexity {purp}')
-    plt.show()
 
     plt.savefig(save_path)
