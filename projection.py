@@ -19,4 +19,4 @@ def projection(b, spanning_vector_matrix):
     """
     coeffs = torch.lstsq(A,b)[0] #change to torch.linalg.lstsq for torch version >= 1.1
 
-    return torch.matmul(A,coeffs)
+    return coeffs
