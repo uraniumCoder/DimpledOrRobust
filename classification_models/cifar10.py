@@ -13,11 +13,12 @@ Defining the model architechture we trained on cifar10
 """
 
 class CIFAR(nn.Module):
-    def __init__(self, features, n_channel, num_classes):
+    def __init__(self, features, n_channel, num_classes, dropout):
         super(CIFAR, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
         self.features = features
         self.classifier = nn.Sequential(
+            nn.Dropout(dropout),
             nn.Linear(n_channel, num_classes)
         )
         #print(self.features)
@@ -51,8 +52,8 @@ def make_layers(cfg, batch_norm=False, dropout=0.0):
 
 def cifar10model(n_channel, pretrained=None, dropout=0.0):
     cfg = [n_channel, n_channel, 'M', 2*n_channel, 2*n_channel, 'M', 4*n_channel, 4*n_channel, 'M', (8*n_channel, 0), 'M']
-    layers = make_layers(cfg, batch_norm=True, dropout=dropout)
-    model = CIFAR(layers, n_channel=8*n_channel, num_classes=10)
+    layers = make_layers(cfg, batch_norm=True, dropout=dropout/20)
+    model = CIFAR(layers, n_channel=8*n_channel, num_classes=10, dropout=dropout)
     if pretrained is not None:
         m = model_zoo.load_url(model_urls['cifar10'])
         state_dict = m.state_dict() if isinstance(m, nn.Module) else m
