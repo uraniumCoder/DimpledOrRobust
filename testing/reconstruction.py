@@ -41,7 +41,10 @@ def average_l2_dist(model, dataloader):
     model.eval()
     for X, y in dataloader:
         image_orig = denormalize(X.cuda())
-        image_regen = torch.clamp(denormalize(model(X.cuda())[0]), 0, 1)
+        model_reconstructed = model(X.cuda())
+        if type(model_reconstructed) is tuple:
+            model_reconstructed = model_reconstructed[0]
+        image_regen = torch.clamp(denormalize(model_reconstructed), 0, 1)
         err = image_regen - image_orig
 
         l2_dist = torch.sqrt((err**2).sum(dim=1).sum(dim=1).sum(dim=1))
