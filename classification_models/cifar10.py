@@ -29,7 +29,7 @@ class CIFAR(nn.Module):
         x = self.classifier(x)
         return x
 
-def make_layers(cfg, batch_norm=False):
+def make_layers(cfg, batch_norm=False, dropout=0.0):
     layers = []
     in_channels = 3
     for i, v in enumerate(cfg):
@@ -40,15 +40,15 @@ def make_layers(cfg, batch_norm=False):
             out_channels = v[0] if isinstance(v, tuple) else v
             conv2d = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=padding)
             if batch_norm:
-                layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU()]
+                layers += [conv2d, nn.BatchNorm2d(out_channels, affine=False), nn.ReLU(), nn.Dropout(dropout)]
             else:
-                layers += [conv2d, nn.ReLU()]
+                layers += [conv2d, nn.ReLU(), nn.Dropout(dropout)]
             in_channels = out_channels
     return nn.Sequential(*layers)
 
-def cifar10model(n_channel, pretrained=None):
+def cifar10model(n_channel, pretrained=None, dropout=0.0):
     cfg = [n_channel, n_channel, 'M', 2*n_channel, 2*n_channel, 'M', 4*n_channel, 4*n_channel, 'M', (8*n_channel, 0), 'M']
-    layers = make_layers(cfg, batch_norm=True)
+    layers = make_layers(cfg, batch_norm=True, dropout=dropout)
     model = CIFAR(layers, n_channel=8*n_channel, num_classes=10)
     if pretrained is not None:
         m = model_zoo.load_url(model_urls['cifar10'])
