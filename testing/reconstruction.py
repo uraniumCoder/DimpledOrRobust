@@ -23,7 +23,10 @@ def show_reconstructed_images(model, dataloader, save_path):
     for X, y in dataloader:
         for i in range(5):
             image_orig = torch.permute(denormalize(X.cuda()), (0,2,3,1))
-            image_regen = torch.permute(torch.clamp(denormalize(model(X.cuda())[0]), 0, 1), (0,2,3,1))
+            model_reconstructed = model(X.cuda())
+            if type(model_reconstructed) is tuple:
+                model_reconstructed = model_reconstructed[0]
+            image_regen = torch.permute(torch.clamp(denormalize(model_reconstructed), 0, 1), (0,2,3,1))
             ax_arr[0][i].imshow(image_orig[i].cpu().numpy())
             ax_arr[1][i].imshow(image_regen[i].cpu().detach().numpy())
         break
