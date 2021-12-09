@@ -17,10 +17,15 @@ class CIFAR(nn.Module):
         super(CIFAR, self).__init__()
         assert isinstance(features, nn.Sequential), type(features)
         self.features = features
-        self.classifier = nn.Sequential(
-            nn.Dropout(dropout),
-            nn.Linear(n_channel, num_classes)
-        )
+        if dropout:
+            self.classifier = nn.Sequential(
+                nn.Dropout(dropout),
+                nn.Linear(n_channel, num_classes)
+            )
+        else:
+            self.classifier = nn.Sequential(
+                nn.Linear(n_channel, num_classes)
+            )
         #print(self.features)
         #print(self.classifier)
 
