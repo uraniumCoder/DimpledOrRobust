@@ -87,6 +87,11 @@ class AdversarialProjectionExperiment():
         bins = np.linspace(0, 1, 200)
         plt.hist(norm_ratios, bins=bins, alpha=0.5)
         plt.hist(rand_ratios, bins=bins, alpha=0.5)
+        plt.legend(['on manifold', 'random'])
+        plt.xlabel('norm ratio')
+        plt.ylabel('count')
+        plt.title('Norm ratio histograms, on manifold vs random')
+
         if save_path == None:
             plt.show()
         else:
@@ -101,6 +106,15 @@ class AdversarialProjectionExperiment():
         def get_local_manifold_approx(x_image):
             return get_local_approximation(self.autoencoder_model.encoder, self.autoencoder_model.decoder, x_image[0])
         def do_restricted_attacks():
+            """
+            Performs restricted attacks on the images in the dataset. 
+            
+            In order to do attacks involving projections, use the patch_perturb function.
+            We do iterative gradient attacks. We attack for 200 iterations, or until the model misclassifies the image.
+
+            Returns a list of perturbation vector norms, and whether or not each attack succeeded in making the model
+            misclassify the image.
+            """
             adversary_cifar10 = L2PGDAttack(
                 self.classifier_model, **({'eps': 200.0, 'eps_iter': 1.5, 'nb_iter': 200,    
                 'rand_init': False, 'targeted': False, 'clip_min': -10.0, 'clip_max': 10.0} | kwargs))
@@ -149,7 +163,14 @@ class AdversarialProjectionExperiment():
 
     def visualize_perturbations(self, save_path, perturbation_vector, on_manifold_vector, off_manifold_vector, local_manifold_flat, img):
         """
-        Visualizes the perturbations
+        Visualizes the perturbations.
+
+        We save the perturbations in the following order:
+        1. Perturbation vector
+        2. Original image
+        3. On manifold vector
+        4. Off manifold vector
+        5-9: Samples on the manifold
         """
         orthobasis_flat = get_orthonormal_basis(local_manifold_flat)
         samples = sample_from_orthonormal_basis(orthobasis_flat, 6)
@@ -157,12 +178,20 @@ class AdversarialProjectionExperiment():
         fig = plt.figure(figsize=(25, 25))
         axs = [x for y in fig.subplots(3,3) for x in y]
         axs[0].imshow((perturbation_vector[0].permute((1, 2, 0))/(20*perturbation_vector.std()) + 0.5).cpu())
+        axs[0].set_title('Perturbation vector')
+
         axs[1].imshow((self.denormalize(img[0]).permute((1, 2, 0))).cpu())
+        axs[1].set_title('Original image')
+
         axs[2].imshow((on_manifold_vector[:, 0].reshape(*img[0].shape).permute((1, 2, 0))/(20*on_manifold_vector.std()) + 0.5).cpu())
+        axs[2].set_title('On manifold vector')
+
         axs[3].imshow((off_manifold_vector[:, 0].reshape(*img[0].shape).permute((1, 2, 0))/(20*off_manifold_vector.std()) + 0.5).cpu())
+        axs[3].set_title('Off manifold vector')
 
         for i in range(5):
             axs[i+4].imshow((samples[:, i].reshape(*img[0].shape).permute((1, 2, 0)) + 2).cpu()/4)
+            axs[i+4].set_title('Sample from manifold')
 
         if save_path == None:
             plt.show()
@@ -173,10 +202,21 @@ class AdversarialProjectionExperiment():
     def plot_perturbation_lengths(norms_unrestricted, norms_onmanifold, norms_offmanifold, successes_unrestricted, successes_onmanifold, successes_offmanifold, save_path):
         """
         Plots the perturbation lengths
+        
+        First, we plot histograms of the lengths of perturbations required to change the model's label, 
+        we plot for all 3 kinds (unrestricted, on manifold, off manifold) of attacks in one plot.
+
+        Then, we return a table of values, including the success rates for all 3 kinds of attacks, 
+        as well as the ratio of perturbation lengths between on/off manifold attacks vs unrestricted attack
+        in the attacks that were successful.
         """
         plt.hist([math.log(x) for x in norms_unrestricted], bins=np.linspace(0, 1, 200), alpha=0.3)
         plt.hist([math.log(x) for x in norms_onmanifold], bins=np.linspace(0, 1, 200), alpha=0.3)
         plt.hist([math.log(x) for x in norms_offmanifold], bins=np.linspace(0, 1, 200), alpha=0.3)
+        plt.legend(['Unrestricted', 'On manifold', 'Off manifold'])
+        plt.title('Lengths of perturbations required to change the model\'s label')
+        plt.xlabel('Log of perturbation length')
+        plt.ylabel('Number of samples')
 
         if save_path == None:
             plt.show()
