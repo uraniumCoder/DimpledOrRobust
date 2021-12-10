@@ -4,6 +4,7 @@ Calculates the average L2 distance between images and reconstructed images by an
 from DimpledOrRobust.data_preprocessing.cifar10 import DatasetMaker
 import torch
 from matplotlib import pyplot as plt
+from tqdm import tqdm
 
 import sys
 from pathlib import Path
@@ -39,7 +40,7 @@ def average_l2_dist(model, dataloader):
     total_l2 = 0
     count = 0
     model.eval()
-    for X, y in dataloader:
+    for X, y in tqdm(dataloader):
         image_orig = denormalize(X.cuda())
         model_reconstructed = model(X.cuda())
         if type(model_reconstructed) is tuple:
