@@ -19,7 +19,7 @@ def get_local_approximation(encoder, decoder, image, eps=None, batch_size=None):
     image_perturbed = torch.zeros(z_perturbed_flat.shape[0], 3, image.shape[1], image.shape[2], device='cuda')
     for i in range(math.ceil(z_perturbed_flat.shape[0]/batch_size)):
         end = min(i*batch_size+batch_size, z_perturbed_flat.shape[0])
-        z_perturbed = z_perturbed_flat[i*batch_size:end, :].reshape((-1, z.shape[1]))
+        z_perturbed = z_perturbed_flat[i*batch_size:end, :].reshape((-1, *z.shape[1:]))
         image_on_manifold_perturbed = decoder(z_perturbed)
         image_perturbed[i*batch_size:end, :, :, :] = image_on_manifold_perturbed
 
