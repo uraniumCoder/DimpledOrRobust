@@ -2,7 +2,7 @@ from torch import nn
 from torch.autograd import Variable
 
 class VAE(nn.Module):
-    def __init__(self):
+    def __init__(self, latent_dim=512):
         super(VAE, self).__init__()
 
         # Encoder
@@ -15,15 +15,15 @@ class VAE(nn.Module):
         self.conv4 = nn.Conv2d(32, 16, kernel_size=3, stride=2, padding=1, bias=False)
         self.bn4 = nn.BatchNorm2d(16)
 
-        self.fc1 = nn.Linear(8 * 8 * 16, 512)
-        self.fc_bn1 = nn.BatchNorm1d(512)
-        self.fc21 = nn.Linear(512, 512)
-        self.fc22 = nn.Linear(512, 512)
+        self.fc1 = nn.Linear(8 * 8 * 16, latent_dim)
+        self.fc_bn1 = nn.BatchNorm1d(latent_dim)
+        self.fc21 = nn.Linear(latent_dim, latent_dim)
+        self.fc22 = nn.Linear(latent_dim, latent_dim)
 
         # Decoder
-        self.fc3 = nn.Linear(512, 512)
-        self.fc_bn3 = nn.BatchNorm1d(512)
-        self.fc4 = nn.Linear(512, 8 * 8 * 16)
+        self.fc3 = nn.Linear(latent_dim, latent_dim)
+        self.fc_bn3 = nn.BatchNorm1d(latent_dim)
+        self.fc4 = nn.Linear(latent_dim, 8 * 8 * 16)
         self.fc_bn4 = nn.BatchNorm1d(8 * 8 * 16)
 
         self.conv5 = nn.ConvTranspose2d(16, 32, kernel_size=3, stride=2, padding=1, output_padding=1, bias=False)
