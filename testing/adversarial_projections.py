@@ -80,7 +80,7 @@ class AdversarialProjectionExperiment():
 
         return norm_ratios, rand_ratios
 
-    def norm_ratio_histographs(norm_ratios, rand_ratios, save_path):
+    def norm_ratio_histographs(self, norm_ratios, rand_ratios, save_path):
         """
         Plots histograms of norm ratios and random ratios in the same figure
         """
@@ -199,7 +199,8 @@ class AdversarialProjectionExperiment():
             plt.savefig(save_path)
         plt.close()
     
-    def plot_perturbation_lengths(norms_unrestricted, norms_onmanifold, norms_offmanifold, successes_unrestricted, successes_onmanifold, successes_offmanifold, save_path):
+    
+    def plot_perturbation_lengths(self, norms_unrestricted, norms_onmanifold, norms_offmanifold, successes_unrestricted, successes_onmanifold, successes_offmanifold, save_path):
         """
         Plots the perturbation lengths
         
@@ -210,9 +211,16 @@ class AdversarialProjectionExperiment():
         as well as the ratio of perturbation lengths between on/off manifold attacks vs unrestricted attack
         in the attacks that were successful.
         """
-        plt.hist([math.log(x) for x in norms_unrestricted], bins=np.linspace(0, 1, 200), alpha=0.3)
-        plt.hist([math.log(x) for x in norms_onmanifold], bins=np.linspace(0, 1, 200), alpha=0.3)
-        plt.hist([math.log(x) for x in norms_offmanifold], bins=np.linspace(0, 1, 200), alpha=0.3)
+        norms_unrestricted = np.array(norms_unrestricted)
+        norms_onmanifold = np.array(norms_onmanifold)
+        norms_offmanifold = np.array(norms_offmanifold)
+        successes_unrestricted = np.array(successes_unrestricted)
+        successes_onmanifold = np.array(successes_onmanifold)
+        successes_offmanifold = np.array(successes_offmanifold)
+        
+        plt.hist([math.log(x) for x in norms_unrestricted[successes_unrestricted] if x > 1.3], bins=np.linspace(0, 4, 200), alpha=0.3)
+        plt.hist([math.log(x) for x in norms_onmanifold[successes_onmanifold] if x > 1.3], bins=np.linspace(0, 4, 200), alpha=0.3)
+        plt.hist([math.log(x) for x in norms_offmanifold[successes_offmanifold] if x > 1.3], bins=np.linspace(0, 4, 200), alpha=0.3)
         plt.legend(['Unrestricted', 'On manifold', 'Off manifold'])
         plt.title('Lengths of perturbations required to change the model\'s label')
         plt.xlabel('Log of perturbation length')
@@ -243,4 +251,3 @@ class AdversarialProjectionExperiment():
         return n_successes, onmanifold_norm_ratio, offmanifold_norm_ratio
 
 
-    

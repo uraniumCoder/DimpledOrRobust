@@ -1,6 +1,7 @@
 """
 Visualize the latent space of a VAE using TSNE.
 """
+import pathlib
 import matplotlib.pyplot as plt
 import torch
 from sklearn.decomposition import PCA
@@ -12,7 +13,7 @@ def draw_digits_latent_space(z_mean_test, test_label, ax):
 
 PERPLEXITIES = [2, 5, 10, 50, 100, 500]
 
-def tsne_plots_model(vae_model, dataloader, save_path, perplexities=PERPLEXITIES):
+def tsne_plots_model(vae_model, dataloader, save_path, perplexities=PERPLEXITIES, pca_components=150):
     """
     TSNE plots for the VAE model.
     This function projects onto 150 dimensions first using PCA, then uses TSNE to project onto 2 dimensions.
@@ -35,7 +36,7 @@ def tsne_plots_model(vae_model, dataloader, save_path, perplexities=PERPLEXITIES
 
 
     for i, purp in enumerate(perplexities):
-        pca = PCA(n_components=150)
+        pca = PCA(n_components=pca_components)
         tsne = TSNE(n_components=2, random_state=42, perplexity=purp)
 
         z_pca = pca.fit_transform(Z_stacked[:])

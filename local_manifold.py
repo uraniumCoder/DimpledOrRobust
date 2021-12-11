@@ -1,6 +1,7 @@
 import torch
+import math
 
-def get_local_approximation(encoder, decoder, image, eps=None):
+def get_local_approximation(encoder, decoder, image, eps=None, batch_size=None):
     """
     Gets set of vectors spanning the tangent space at image of the image manifold
     image is a tensor of shape (3, H, W)
@@ -11,8 +12,17 @@ def get_local_approximation(encoder, decoder, image, eps=None):
     if eps is None:
         eps = 0.01
     z_perturbed_flat = torch.eye(z_flat.shape[1], device='cuda')*eps + z_flat
-    z_perturbed = z_perturbed_flat.reshape((-1, *z.shape[1:]))
-    image_perturbed = decoder(z_perturbed)
+    
+    if batch_size is None:
+        batch_size = z_perturbed_flat.shape[0]
+
+    image_perturbed = torch.zeros(z_perturbed_flat.shape[0], 3, image.shape[2], image.shape[3], device='cuda')
+    for i in range(math.ceil(z_perturbed_flat.shape[0]/batch_size)):
+        end = min(i*batch_size+batch_size, z_perturbed_flat.shape[0])
+        z_perturbed = z_perturbed_flat[i*batch_size:end, :].reshape((-1, z.shape[1]))
+        image_on_manifold_perturbed = decoder(z_perturbed)
+        image_perturbed[i*batch_size:end, :, :, :] = image_on_manifold_perturbed
+
     return (image_perturbed - image_on_manifold).detach() / eps
 
 def get_orthonormal_basis(tangent_vectors):
