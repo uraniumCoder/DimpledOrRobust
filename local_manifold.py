@@ -21,7 +21,7 @@ def get_local_approximation(encoder, decoder, image, eps=None, batch_size=None):
         end = min(i*batch_size+batch_size, z_perturbed_flat.shape[0])
         z_perturbed = z_perturbed_flat[i*batch_size:end, :].reshape((-1, *z.shape[1:]))
         image_on_manifold_perturbed = decoder(z_perturbed)
-        image_perturbed[i*batch_size:end, :, :, :] = image_on_manifold_perturbed
+        image_perturbed[i*batch_size:end, :, :, :] = image_on_manifold_perturbed.detach()
 
     return (image_perturbed - image_on_manifold).detach() / eps
 
