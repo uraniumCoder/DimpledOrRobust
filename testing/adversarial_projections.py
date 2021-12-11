@@ -116,7 +116,7 @@ class AdversarialProjectionExperiment():
             misclassify the image.
             """
             adversary_cifar10 = L2PGDAttack(
-                self.classifier_model, **({'eps': 200.0, 'eps_iter': 1.5, 'nb_iter': 200,    
+                self.classifier_model, **({'eps': 200.0, 'eps_iter': 0.5, 'nb_iter': 50,    
                 'rand_init': False, 'targeted': False, 'clip_min': -10.0, 'clip_max': 10.0} | kwargs))
             
             norms, successes = [], []
@@ -218,9 +218,9 @@ class AdversarialProjectionExperiment():
         successes_onmanifold = np.array(successes_onmanifold)
         successes_offmanifold = np.array(successes_offmanifold)
         
-        plt.hist([math.log(x) for x in norms_unrestricted[successes_unrestricted] if x > 1.3], bins=np.linspace(0, 4, 200), alpha=0.3)
-        plt.hist([math.log(x) for x in norms_onmanifold[successes_onmanifold] if x > 1.3], bins=np.linspace(0, 4, 200), alpha=0.3)
-        plt.hist([math.log(x) for x in norms_offmanifold[successes_offmanifold] if x > 1.3], bins=np.linspace(0, 4, 200), alpha=0.3)
+        plt.hist([math.log(x) for x in norms_unrestricted[successes_unrestricted] if x > 0.1], bins=np.linspace(0, 4, 200), alpha=0.3)
+        plt.hist([math.log(x) for x in norms_onmanifold[successes_onmanifold] if x > 0.1], bins=np.linspace(0, 4, 200), alpha=0.3)
+        plt.hist([math.log(x) for x in norms_offmanifold[successes_offmanifold] if x > 0.1], bins=np.linspace(0, 4, 200), alpha=0.3)
         plt.legend(['Unrestricted', 'On manifold', 'Off manifold'])
         plt.title('Lengths of perturbations required to change the model\'s label')
         plt.xlabel('Log of perturbation length')
