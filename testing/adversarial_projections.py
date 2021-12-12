@@ -161,7 +161,7 @@ class AdversarialProjectionExperiment():
             project_onto_not_k=True, 
             get_local_manifold_approx=get_local_manifold_approx, 
             LATENT_DIM=self.LATENT_DIM, 
-            IMAGESPACE_DIM=self.MAGESPACE_DIM)
+            IMAGESPACE_DIM=self.IMAGESPACE_DIM)
         norms_off_manifold, success_off_manifold = do_restricted_attacks()
         
         print('Off manifold attacks done')
