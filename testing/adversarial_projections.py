@@ -49,6 +49,7 @@ class AdversarialProjectionExperiment():
         else:
             params = {'eps': 3.0, 'eps_iter': 0.1, 'nb_iter': 50,    
                 'rand_init': False, 'targeted': False, 'clip_min': -10.0, 'clip_max': 10.0}
+            params.update(kwargs)
             adversary_cifar10 = LinfPGDAttack(
                 self.classifier_model, **params)
 
