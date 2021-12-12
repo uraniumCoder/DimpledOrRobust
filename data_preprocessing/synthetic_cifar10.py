@@ -37,3 +37,11 @@ class SyntheticCifar10Dataset(Dataset):
         with open(self.root_pth / 'label_{}.txt'.format(self.image_idxs[idx]), 'r') as f:
             label = int(f.read())
         return image, label
+
+    
+    @staticmethod
+    def denormalize(img):
+        """
+        Denormalizes a tensor image
+        """
+        return SyntheticCifar10Dataset.INV_NRM(img)

@@ -27,7 +27,7 @@ class AdversarialProjectionExperiment():
                  denormalize
                  ):
         self.dataset = dataset
-        self.dataloader = DataLoader(dataset, batch_size=1)
+        self.dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
         self.autoencoder_model = autoencoder_model
         self.classifier_model = classifier_model
         self.LATENT_DIM = latent_dim
