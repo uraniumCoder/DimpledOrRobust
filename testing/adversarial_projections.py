@@ -99,10 +99,7 @@ class AdversarialProjectionExperiment():
         plt.ylabel('count')
         plt.title('Norm ratio histograms, on manifold vs random')
 
-        if save_path == None:
-            plt.show()
-        else:
-            plt.savefig(save_path)
+        plt.savefig(save_path)
 
     @staticmethod
     def classifier_predictions(classifier_model, inputs):
