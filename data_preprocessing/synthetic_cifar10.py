@@ -14,7 +14,7 @@ class SyntheticCifar10Dataset(Dataset):
     STD = torch.tensor((0.2336, 0.2314, 0.2573))
 
     NRM = transforms.Normalize(MEAN, STD)
-    INV_NORM = transforms.Normalize(-MEAN/STD, 1/STD)
+    INV_NRM = transforms.Normalize(-MEAN/STD, 1/STD)
 
     # Transforms object for testset with NO augmentation
     TRANSFORM_NO_AUG = transforms.Compose([NRM])
