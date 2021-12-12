@@ -41,13 +41,16 @@ class AdversarialProjectionExperiment():
         """
         advertorch.attacks.iterative_projected_gradient.perturb_iterative = patch_perturb()
         if order == 2:
+            params = {'eps': 20.0, 'eps_iter': 1.0, 'nb_iter': 50,    
+                'rand_init': False, 'targeted': False, 'clip_min': -10.0, 'clip_max': 10.0}
+            params.update(kwargs)
             adversary_cifar10 = L2PGDAttack(
-                self.classifier_model, **({'eps': 20.0, 'eps_iter': 1.0, 'nb_iter': 50,    
-                'rand_init': False, 'targeted': False, 'clip_min': -10.0, 'clip_max': 10.0} | kwargs))
+                self.classifier_model, **params)
         else:
+            params = {'eps': 3.0, 'eps_iter': 0.1, 'nb_iter': 50,    
+                'rand_init': False, 'targeted': False, 'clip_min': -10.0, 'clip_max': 10.0}
             adversary_cifar10 = LinfPGDAttack(
-                self.classifier_model, **({'eps': 3.0, 'eps_iter': 0.1, 'nb_iter': 50,    
-                'rand_init': False, 'targeted': False, 'clip_min': -10.0, 'clip_max': 10.0} | kwargs))
+                self.classifier_model, **params)
 
         norm_ratios, rand_ratios = [], []
         for cln_data, true_label in tqdm(self.dataloader):
