@@ -61,7 +61,7 @@ class AdversarialProjectionExperiment():
             perturbation_vector = adv_untargeted - cln_data
             perturbation_vector_flat = perturbation_vector.reshape((self.IMAGESPACE_DIM,))[:, None]
 
-            local_manifold = get_local_approximation(self.autoencoder_model.encoder, self.autoencoder_model.decoder, cln_data[0])
+            local_manifold = get_local_approximation(self.autoencoder_model.encode, self.autoencoder_model.decode, cln_data[0])
             local_manifold_flat = local_manifold.reshape((self.LATENT_DIM, self.IMAGESPACE_DIM)).transpose(0, 1).cuda()
             on_manifold_vector = projection(perturbation_vector_flat, local_manifold_flat) 
 
@@ -108,7 +108,7 @@ class AdversarialProjectionExperiment():
 
     def second_experiment(self, **kwargs):
         def get_local_manifold_approx(x_image):
-            return get_local_approximation(self.autoencoder_model.encoder, self.autoencoder_model.decoder, x_image[0])
+            return get_local_approximation(self.autoencoder_model.encode, self.autoencoder_model.decode, x_image[0])
         def do_restricted_attacks():
             """
             Performs restricted attacks on the images in the dataset. 
