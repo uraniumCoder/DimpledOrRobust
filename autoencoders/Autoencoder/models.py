@@ -132,7 +132,7 @@ class SegNet(nn.Module):
 
         self.conv_final = nn.Conv2d(n_classes, n_classes, 1)
 
-    def encoder(self, inputs):
+    def encode(self, inputs):
         down1 = self.down1(inputs)
         down2 = self.down2(down1)
         down3 = self.down3(down2)
@@ -140,7 +140,7 @@ class SegNet(nn.Module):
         #down5 = self.down5(down4)
         return down4
 
-    def decoder(self, latent):
+    def decode(self, latent):
         up5 = latent
         #up5 = self.up5(up6)#, indices_5, unpool_shape5)
         up4 = self.up4(up5)#, indices_4, unpool_shape4)
