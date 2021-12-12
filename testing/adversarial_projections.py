@@ -54,30 +54,33 @@ class AdversarialProjectionExperiment():
                 self.classifier_model, **params)
 
         norm_ratios, rand_ratios = [], []
-        for cln_data, true_label in tqdm(self.dataloader):
-            cln_data, true_label = cln_data.to(self.device), true_label.to(self.device)
-            adv_untargeted = adversary_cifar10.perturb(cln_data, true_label)
+        try:
+            for cln_data, true_label in tqdm(self.dataloader):
+                cln_data, true_label = cln_data.to(self.device), true_label.to(self.device)
+                adv_untargeted = adversary_cifar10.perturb(cln_data, true_label)
 
-            perturbation_vector = adv_untargeted - cln_data
-            perturbation_vector_flat = perturbation_vector.reshape((self.IMAGESPACE_DIM,))[:, None]
+                perturbation_vector = adv_untargeted - cln_data
+                perturbation_vector_flat = perturbation_vector.reshape((self.IMAGESPACE_DIM,))[:, None]
 
-            local_manifold = get_local_approximation(self.autoencoder_model.encode, self.autoencoder_model.decode, cln_data[0])
-            local_manifold_flat = local_manifold.reshape((self.LATENT_DIM, self.IMAGESPACE_DIM)).transpose(0, 1).cuda()
-            on_manifold_vector = projection(perturbation_vector_flat, local_manifold_flat) 
+                local_manifold = get_local_approximation(self.autoencoder_model.encode, self.autoencoder_model.decode, cln_data[0])
+                local_manifold_flat = local_manifold.reshape((self.LATENT_DIM, self.IMAGESPACE_DIM)).transpose(0, 1).cuda()
+                on_manifold_vector = projection(perturbation_vector_flat, local_manifold_flat) 
 
-            random_manifold = torch.normal(torch.zeros(self.IMAGESPACE_DIM, self.LATENT_DIM), torch.ones(self.IMAGESPACE_DIM, self.LATENT_DIM)).cuda()
-            on_random_vector = projection(perturbation_vector_flat, random_manifold) 
+                random_manifold = torch.normal(torch.zeros(self.IMAGESPACE_DIM, self.LATENT_DIM), torch.ones(self.IMAGESPACE_DIM, self.LATENT_DIM)).cuda()
+                on_random_vector = projection(perturbation_vector_flat, random_manifold) 
 
-            off_manifold_vector = perturbation_vector_flat - on_manifold_vector
-            
-            norm_ratio = (on_manifold_vector.norm()/perturbation_vector.norm()).item()
-            random_ratio = (on_random_vector.norm()/perturbation_vector.norm()).item()
-            
-            if not np.isnan(norm_ratio):
-                norm_ratios.append(norm_ratio)
+                off_manifold_vector = perturbation_vector_flat - on_manifold_vector
+                
+                norm_ratio = (on_manifold_vector.norm()/perturbation_vector.norm()).item()
+                random_ratio = (on_random_vector.norm()/perturbation_vector.norm()).item()
+                
+                if not np.isnan(norm_ratio):
+                    norm_ratios.append(norm_ratio)
 
-            if not np.isnan(random_ratio):
-                rand_ratios.append(random_ratio)
+                if not np.isnan(random_ratio):
+                    rand_ratios.append(random_ratio)
+        except KeyboardInterrupt:
+            pass
 
         if plot_perturbations:
             self.visualize_perturbations(save_path, perturbation_vector, on_manifold_vector, off_manifold_vector, local_manifold_flat, cln_data)
