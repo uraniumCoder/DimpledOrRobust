@@ -200,11 +200,7 @@ class AdversarialProjectionExperiment():
             axs[i+4].imshow((samples[:, i].reshape(*img[0].shape).permute((1, 2, 0)) + 2).cpu()/4)
             axs[i+4].set_title('Sample from manifold')
 
-        if save_path is not None:
-            plt.savefig(save_path)
-        else:
-            plt.show()
-    
+        plt.savefig(save_path)
     
     def plot_perturbation_lengths(self, norms_unrestricted, norms_onmanifold, norms_offmanifold, successes_unrestricted, successes_onmanifold, successes_offmanifold, save_path):
         """
@@ -232,11 +228,7 @@ class AdversarialProjectionExperiment():
         plt.xlabel('Log of perturbation length')
         plt.ylabel('Number of samples')
 
-        if save_path == None:
-            plt.show()
-        else:
-            plt.savefig(save_path)
-        plt.close()
+        plt.savefig(save_path)
 
         n_successes = (sum(successes_unrestricted), sum(successes_onmanifold), sum(successes_offmanifold))
         tot_onmanifold = sum(norms_onmanifold[successes_onmanifold])
