@@ -119,9 +119,12 @@ class AdversarialProjectionExperiment():
             Returns a list of perturbation vector norms, and whether or not each attack succeeded in making the model
             misclassify the image.
             """
+
+            params = {'eps': 200.0, 'eps_iter': 0.5, 'nb_iter': 50,    
+                'rand_init': False, 'targeted': False, 'clip_min': -10.0, 'clip_max': 10.0}
+            params.update(kwargs)
             adversary_cifar10 = L2PGDAttack(
-                self.classifier_model, **({'eps': 200.0, 'eps_iter': 0.5, 'nb_iter': 50,    
-                'rand_init': False, 'targeted': False, 'clip_min': -10.0, 'clip_max': 10.0} | kwargs))
+                self.classifier_model, **params)
             
             norms, successes = [], []
 
